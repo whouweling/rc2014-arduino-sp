@@ -62,6 +62,8 @@ int clockSpeed = 0;
 char * command;
 char * p;
 
+long sp_trigger_key = 0;
+
 void setup()
 {
   delay(100);
@@ -239,7 +241,8 @@ void execute(char * command) {
     return;
   }
 
-  if (strcmp(base, "console") == 0) {
+  if (strcmp(base, "console") == 0 
+      || strcmp(base, "exit") == 0) {
     switch_console();
     return;
   }
@@ -308,7 +311,10 @@ void loop() {
     if (Serial.available()) {
       char c = Serial.read();
       if (c == '~') {
-        switch_sp();
+        if(millis() - sp_trigger_key < 500) {
+           switch_sp();          
+        }
+        sp_trigger_key = millis();
       } else {
         mySerial.write(c);
       }
